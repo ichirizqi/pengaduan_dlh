@@ -13,6 +13,21 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
 
+    public function listadmin()
+    {
+
+        
+
+        $posts = Admin::latest()->get();
+
+        //make response JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data Post',
+            'data'    => $posts  
+        ], 200);
+    }
+
     // GET API
     public function userDashboard()
     {

@@ -28,6 +28,21 @@ class IsuController extends Controller
         })->paginate(5);
     }
 
+    public function indexuser()
+    {
+
+        
+
+        $posts = Isu::latest()->get();
+
+        //make response JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data Post',
+            'data'    => $posts  
+        ], 200);
+    }
+
     public function indexBan()
     {
 

@@ -125,6 +125,8 @@ Route::group(['prefix' => 'dinas', 'middleware' => ['auth:user-api','scopes:user
 });
 
 // USER
+Route::get('/user/isuuser', [IsuController::class, 'indexuser']);
+Route::get('/user/adminlist', [AuthController::class, 'listadmin']);
 Route::post('/user/isumasuk', [IsuController::class, 'store']);
 Route::get('/aktivitas/search', [AktivitasController::class, 'search']);
 Route::get('/pengaduan/search', [PengaduanController::class, 'search']);
