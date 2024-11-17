@@ -31,7 +31,7 @@ class BanEmail extends Mailable
      */
     public function build()
     {
-        return $this->from('kotabatudlh@gmail.com')
+        return $this->from('pengaduanbatu@gmail.com')
                     ->subject('Informasi Pengaduan Dinas Lingkungan Hidup Kota Batu')
                     ->view('ban');
     }

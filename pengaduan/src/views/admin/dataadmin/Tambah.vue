@@ -226,7 +226,7 @@ export default {
                 name: '',
                 email: '',
                 password: '',
-                id_peran: '11',
+                id_peran: '1',
                 photo: ''
             })
         }

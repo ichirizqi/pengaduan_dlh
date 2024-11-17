@@ -13,21 +13,6 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
 
-    public function listadmin()
-    {
-
-        
-
-        $posts = Admin::latest()->get();
-
-        //make response JSON
-        return response()->json([
-            'success' => true,
-            'message' => 'List Data Post',
-            'data'    => $posts  
-        ], 200);
-    }
-
     // GET API
     public function userDashboard()
     {
@@ -312,93 +297,176 @@ class AuthController extends Controller
 
     // EDIT
 
+    // public function editUser(Request $request, $id)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'nip' => 'required',
+    //         'name' => 'required',
+    //         'email' => 'required',
+    //         'foto' => 'mimes:jpg,png,jpeg|max:15000',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'message' => 'validation fails',
+    //             'errors' => $validator->errors()
+    //         ], 400);
+    //     }
+
+    //     $user = User::find($id);
+
+    //         $user->nip = $request->nip;
+    //         $user->name = $request->name;
+    //         $user->email = $request->email;
+    //         // $user->password = Hash::make($request->password);
+
+    //         if($request->password != null){
+    //             $user->password = bcrypt($request->password);
+    //         }
+    //         else if($request->password == null){
+    //             $user->password = $user['password'];
+    //         }
+    //         else if ($request->foto && $request->foto->isValid()) {
+    //             $file_name = $request->foto->getClientOriginalName();
+    //             $request->foto->move(public_path('dinas'), $file_name);
+    //             $path = $file_name;
+    //             $user->foto = $path;
+    //         }
+    //         else {
+    //             unset($user['foto']);
+    //         }
+
+            
+    //         $user->update();
+    //         return response()->json([
+    //             'message' => 'Data Pribadi berhasil di updated',
+    //             'data' => $user
+    //         ], 200);
+    // }
+
     public function editUser(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'nip' => 'required',
-            'name' => 'required',
-            'email' => 'required',
-            'foto' => 'mimes:jpg,png,jpeg|max:15000',
-        ]);
+{
+    // Validate the incoming data
+    $validator = Validator::make($request->all(), [
+        'nip' => 'required',
+        'name' => 'required',
+        'email' => 'required',
+        'foto' => 'nullable|mimes:jpg,png,jpeg|max:15000',  // foto is optional
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'validation fails',
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        $user = User::find($id);
-
-            $user->nip = $request->nip;
-            $user->name = $request->name;
-            $user->email = $request->email;
-            // $user->password = Hash::make($request->password);
-
-            if($request->password != null){
-                $user->password = bcrypt($request->password);
-            }
-            else if($request->password == null){
-                $user->password = $user['password'];
-            }
-            else if ($request->foto && $request->foto->isValid()) {
-                $file_name = $request->foto->getClientOriginalName();
-                $request->foto->move(public_path('user'), $file_name);
-                $path = $file_name;
-                $user->foto = $path;
-            }
-            else {
-                unset($user['foto']);
-            }
-            $user->update();
-            return response()->json([
-                'message' => 'Data Pribadi berhasil di updated',
-                'data' => $user
-            ], 200);
+    // If validation fails, return error response
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation fails',
+            'errors' => $validator->errors()
+        ], 400);
     }
 
-    public function editAdmin(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required',
-            'foto' => 'mimes:jpg,png,jpeg|max:15000',
-        ]);
+    // Find the user
+    $user = User::find($id);
+    if (!$user) {
+        return response()->json([
+            'message' => 'User not found'
+        ], 404);
+    }
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'validation fails',
-                'errors' => $validator->errors()
-            ], 400);
+    // Update basic user fields
+    $user->nip = $request->nip;
+    $user->name = $request->name;
+    $user->email = $request->email;
+
+    // Update password if provided
+    if ($request->password != null) {
+        $user->password = bcrypt($request->password);
+    } 
+
+    // Handle the photo upload logic
+    if ($request->hasFile('foto') && $request->foto->isValid()) {
+        // Delete the old photo from the server if it exists
+        if ($user->foto && file_exists(public_path('dinas/' . $user->foto))) {
+            unlink(public_path('dinas/' . $user->foto));
         }
 
-        $admin = Admin::find($id);
+        // Get the uploaded file name and generate a unique name to avoid conflicts
+        $file_name = time() . '_' . $request->foto->getClientOriginalName();
 
-            $admin->name = $request->name;
-            $admin->email = $request->email;
-            // $admin->password = Hash::make($request->password);
+        // Move the file to the 'dinas' folder in public directory
+        $request->foto->move(public_path('dinas'), $file_name);
 
-            if($request->password != null){
-                $admin->password = bcrypt($request->password);
-            }
-            else if($request->password == null){
-                $admin->password = $admin['password'];
-            }
-            else if ($request->foto && $request->foto->isValid()) {
-                $file_name = $request->foto->getClientOriginalName();
-                $request->foto->move(public_path('admin'), $file_name);
-                $path = $file_name;
-                $admin->foto = $path;
-            }
-            else {
-                unset($admin['foto']);
-            }
-            $admin->update();
-            return response()->json([
-                'message' => 'Data Pribadi berhasil di updated',
-                'data' => $admin
-            ], 200);
+        // Store the file name in the user's foto field
+        $user->foto = $file_name;
     }
+
+    // Update the user record in the database
+    $user->update();
+
+    return response()->json([
+        'message' => 'User data successfully updated',
+        'data' => $user
+    ], 200);
+}
+
+
+public function editAdmin(Request $request, $id)
+{
+    // Validate the incoming data
+    $validator = Validator::make($request->all(), [
+        'name' => 'required',
+        'email' => 'required',
+        'foto' => 'nullable|mimes:jpg,png,jpeg|max:15000', // foto is optional
+    ]);
+
+    // If validation fails, return error response
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation fails',
+            'errors' => $validator->errors()
+        ], 400);
+    }
+
+    // Find the admin by ID
+    $admin = Admin::find($id);
+    if (!$admin) {
+        return response()->json([
+            'message' => 'Admin not found'
+        ], 404);
+    }
+
+    // Update basic fields
+    $admin->name = $request->name;
+    $admin->email = $request->email;
+
+    // Update password if provided
+    if ($request->password != null) {
+        $admin->password = bcrypt($request->password);
+    }
+
+    // Handle photo upload
+    if ($request->hasFile('foto') && $request->foto->isValid()) {
+        // Delete the old photo from the server if it exists
+        if ($admin->foto && file_exists(public_path('admin/' . $admin->foto))) {
+            unlink(public_path('admin/' . $admin->foto));
+        }
+
+        // Get the uploaded file and generate a unique name to avoid conflicts
+        $file_name = time() . '_' . $request->foto->getClientOriginalName();
+
+        // Move the file to the 'admin' folder in the public directory
+        $request->foto->move(public_path('admin'), $file_name);
+
+        // Update the photo field in the database
+        $admin->foto = $file_name;
+    }
+
+    // Update the admin record in the database
+    $admin->update();
+
+    // Return response indicating success
+    return response()->json([
+        'message' => 'Data Pribadi berhasil di updated',
+        'data' => $admin
+    ], 200);
+}
 
     // HAPUS
     public function destroyUser($id)

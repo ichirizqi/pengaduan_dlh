@@ -233,7 +233,7 @@ export default {
                 name: '',
                 email: '',
                 password: '',
-                id_peran: '12',
+                id_peran: '2',
                 photo: ''
             })
         }
@@ -281,8 +281,9 @@ export default {
             .then(()=>{
                 this.$router.push({name: 'admin-akun-dinas'});  
             })
-            .catch(()=>{
-           alert('Format foto yang Anda masukkan tidak valid. Mohon masukkan foto dengan format JPG, PNG atau JPEG ')
+            .catch((error)=>{
+        //    alert('Format foto yang Anda masukkan tidak valid. Mohon masukkan foto dengan format JPG, PNG atau JPEG ')
+            console.log(error)
             })
         },
         getData(){  

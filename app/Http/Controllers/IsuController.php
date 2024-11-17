@@ -71,6 +71,41 @@ class IsuController extends Controller
                 'error' => $validator->errors()
                 ], 401);
         }
+
+        // //upload image
+        // $image = $request->file('foto');
+        // $image->storeAs('public/isu', $image->hashName());
+
+
+        // //save to database
+        // $post = Isu::create([
+        //     'nama'      => $request->nama,
+        //     'email'     => $request->email,
+        //     'nohp'      => $request->nohp,
+        //     'pihak_terduga' => $request->pihak_terduga,
+        //     'masalah' => $request->masalah,
+        //     'penyelesaian' => $request->penyelesaian,
+        //     'foto' => $image->hashName(),
+        //     // 'status' => $request->status
+        // ]);
+
+        // //success save to database
+        // if($post) {
+
+        //     return response()->json([
+        //         'success' => true,
+        //         'message' => 'Post Created',
+        //         'data'    => $post  
+        //     ], 201);
+
+        // } 
+
+        // //failed save to database
+        // return response()->json([
+        //     'success' => false,
+        //     'message' => 'Post Failed to Save',
+        // ], 409);
+
         $document = new Isu();
         $document->nama = $request->nama;
         $document->email = $request->email;
